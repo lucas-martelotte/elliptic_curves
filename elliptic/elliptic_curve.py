@@ -1,5 +1,10 @@
-from typing import Union, Tuple, List, Any, Optional, Literal, Type
+from typing import Any, Literal, Tuple, Union
+
 import sympy
+
+
+class SingularCurveError(Exception):
+    pass
 
 
 class Point:
@@ -35,10 +40,6 @@ class Point:
         return str(self.value)
 
 
-class SingularCurveError(Exception):
-    pass
-
-
 class EllipticCurve:
     def __init__(self, a: int, b: int):
         """Creates an ellptic curve given by: y^2 = x^3 + ax + b"""
@@ -47,12 +48,14 @@ class EllipticCurve:
         if self.discriminant == 0:
             raise SingularCurveError("Invalid coefficients for the elliptic curve!")
 
-    def inv(self, p: Point):
+    def inv(self, p: Point) -> Point:
+        """Calculates the inverse of p"""
         if p.value == "O":
             return Point("O")
         return Point((p.x, -p.y))
 
     def sum(self, p_1: Point, p_2: Point) -> Point:
+        """Operates the points p_1 and p_2"""
         if p_1.value == "O":
             return p_2
         if p_2.value == "O":
@@ -72,4 +75,7 @@ class EllipticCurve:
         return Point((x, -y))
 
     def __str__(self):
-        return f"y^2 = x^2 + {self.a}x + {self.b}"
+        x, y = sympy.symbols("x, y")
+        exp = x**2 + self.a * x + self.b
+        exp_str = str(exp).replace("**", "^").replace("*", "")
+        return f"E : y^2 = {exp_str}"

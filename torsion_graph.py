@@ -1,8 +1,9 @@
-import pygame
 from typing import Tuple
 
+import pygame
+
 from elliptic.elliptic_curve import EllipticCurve, SingularCurveError
-from elliptic.torsion import calculate_torsion_group
+from elliptic.torsion import calculate_torsion_subgroup
 
 pygame.init()
 pygame.display.set_caption("Torsion Group Graph")
@@ -64,7 +65,7 @@ while running:
     color = None
     try:
         e = EllipticCurve(point[0], point[1])
-        color = GROUP_TO_COLOR[calculate_torsion_group(e)]
+        color = GROUP_TO_COLOR[calculate_torsion_subgroup(e)]
     except SingularCurveError:
         color = (255, 255, 255)
     pygame.draw.rect(screen, color, (950 + point[0] * 10, 540 + point[1] * 10, 10, 10))

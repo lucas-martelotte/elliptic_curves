@@ -1,9 +1,11 @@
-from .elliptic_curve import EllipticCurve, SingularCurveError
-from .torsion import calculate_torsion_group
-from tqdm import tqdm
-import numpy as np
 import csv
+
 import cv2
+import numpy as np
+from tqdm import tqdm
+
+from .elliptic_curve import EllipticCurve, SingularCurveError
+from .torsion import calculate_torsion_subgroup
 
 CHUNK_SIZE = 50
 GROUP_TO_COLOR = {
@@ -45,7 +47,7 @@ def calculate_chunk(chunk_y: int, chunk_x: int):
             torsion_group = "*"
             try:
                 e = EllipticCurve(x, y)
-                torsion_group = calculate_torsion_group(e)
+                torsion_group = calculate_torsion_subgroup(e)
             except SingularCurveError:
                 pass
             current_row.append(torsion_group)
