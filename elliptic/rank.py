@@ -30,9 +30,9 @@ def exists_valid_solution_to(a: int, b_1: int, b_2: int) -> bool:
         gcd(M, e) = gcd(N, e) = gcd(M, N) =
            gcd(b_1, e) = gcd(b_2, M) = 1
     """
-    print(f"Checking for b_1 = {b_1} and b_2 = {b_2}")
+    # print(f"Checking for b_1 = {b_1} and b_2 = {b_2}")
     if b_1 <= 0 and a <= 0 and b_2 <= 0:
-        print("No solutions in the reals!")
+        # print("No solutions in the reals!")
         return False
     # Checking if solution exists
     for M in range(-100, 100, 1):
@@ -46,12 +46,12 @@ def exists_valid_solution_to(a: int, b_1: int, b_2: int) -> bool:
                     and gcd(b_1, e) == 1
                     and gcd(b_2, M) == 1
                 ):
-                    print(f"Solution: (M, N, e) = {(M, N, e)}.")
+                    # print(f"Solution: (M, N, e) = {(M, N, e)}.")
                     return True
     # Checking if solution DOESN'T exist mod p
     for p in FIRST_1000_PRIMES:
         if not exists_solution_mod_p_to(p, a, b_1, b_2):
-            print(f"There is no solution mod {p}.")
+            # print(f"There is no solution mod {p}.")
             return False
     raise TimeoutError("Unable to determine if solution exists... :(")
 
