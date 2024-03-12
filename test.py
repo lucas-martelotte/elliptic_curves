@@ -5,6 +5,10 @@ from elliptic.elliptic_curve import EllipticCurve, SingularCurveError
 from elliptic.rank import calculate_rank_of_elliptic_curve
 from elliptic.torsion import calculate_torsion_subgroup
 
+
+write_chunk_image(-1, -1)
+exit()
+
 print(f"Rank is: {calculate_rank_of_elliptic_curve(0, -5)}.")
 # for a in range(-100, 100, 1):
 #     for b in range(-100, 100, 1):

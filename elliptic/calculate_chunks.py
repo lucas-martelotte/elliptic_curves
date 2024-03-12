@@ -3,6 +3,7 @@ import csv
 import cv2
 import numpy as np
 from tqdm import tqdm
+import json
 
 from .elliptic_curve import EllipticCurve, SingularCurveError
 from .torsion import calculate_torsion_subgroup
@@ -30,31 +31,38 @@ GROUP_TO_COLOR = {
 
 def calculate_chunk(chunk_y: int, chunk_x: int):
     """
-    Iterates through a square of size CHUNK_SIZE in the coordinate
-    (chunk_x, chunk_y). For each iteration (a, b) it calculates the
-    torsion group of the ellptic curve y^2 = x^3 + ax + b and
-    calculates its torsion group. Lastly, it saves all torsion
-    groups in a csv file under the directory "chunks/".
+    Iterates through a square of size CHUNK_SIZE in the
+    coordinate (chunk_x, chunk_y).
+
+    For each iteration (a, b) it calculates the
+    torsion group of the ellptic curve y^2 = x^3 + ax + b.
+
+    Lastly, it saves all torsion groups in a json file under
+    the directory "chunks/".
     """
+    chunk_dict: dict[str, list[tuple[int, int]]] = {}
     initial_x, initial_y = chunk_x * CHUNK_SIZE, chunk_y * CHUNK_SIZE
-    rows: list[list[str]] = []
-    for y in tqdm(
-        range(initial_y, initial_y + CHUNK_SIZE, 1),
+    for relative_y in tqdm(
+        range(CHUNK_SIZE),
         desc=f"Calculating chunk {(chunk_x, chunk_y)}",
     ):
-        current_row: list[str] = []
-        for x in range(initial_x, initial_x + CHUNK_SIZE, 1):
+        y = initial_y + relative_y
+        for relative_x in range(CHUNK_SIZE):
+            x = initial_x + relative_x
             torsion_group = "*"
             try:
                 e = EllipticCurve(x, y)
                 torsion_group = calculate_torsion_subgroup(e)
             except SingularCurveError:
                 pass
-            current_row.append(torsion_group)
-        rows.append(current_row)
-    with open(f"chunks/{chunk_y}_{chunk_x}_{CHUNK_SIZE}.csv", "w", newline="") as file:
-        for row in rows:
-            csv.writer(file).writerow(row)
+            if torsion_group != "0":
+                if torsion_group not in chunk_dict:
+                    chunk_dict[torsion_group] = []
+                chunk_dict[torsion_group].append((relative_y, relative_x))
+    for key, value in chunk_dict.items():
+        chunk_dict[key] = sorted(value)
+    with open(f"chunks/{chunk_y}_{chunk_x}_{CHUNK_SIZE}.json", "w") as file:
+        json.dump(chunk_dict, file)
 
 
 def write_chunk_image(chunk_y: int, chunk_x: int):
@@ -62,16 +70,10 @@ def write_chunk_image(chunk_y: int, chunk_x: int):
     Reads the chunk file (if there is any) and writes an image
     file corresponding to it in the directory "chunks/".
     """
-    with open(f"chunks/{chunk_y}_{chunk_x}_{CHUNK_SIZE}.csv", "r", newline="") as file:
-        reader = csv.reader(file, delimiter=",", quotechar="|")
+    with open(f"chunks/{chunk_y}_{chunk_x}_{CHUNK_SIZE}.json", "r") as file:
+        chunk_dict = json.loads(file.read())
         image = np.zeros((CHUNK_SIZE, CHUNK_SIZE, 3))
-        x, y = 0, 0
-        for row in reader:
-            x = 0
-            for group in row:
-                color = GROUP_TO_COLOR[group]
-                color = (color[2], color[1], color[0])
-                image[y, x] = color
-                x += 1
-            y += 1
-        cv2.imwrite(f"chunks/{chunk_y}_{chunk_x}_{CHUNK_SIZE}.png", image)
+        for group, points in chunk_dict.items():
+            for py, px in points:
+                image[py, px] = GROUP_TO_COLOR[group][::-1]
+        cv2.imwrite(f"chunks/{chunk_y}_{chunk_x}_{CHUNK_SIZE}_NEW.png", image)
