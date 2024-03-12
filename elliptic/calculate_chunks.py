@@ -1,9 +1,9 @@
 import csv
+import json
 
 import cv2
 import numpy as np
 from tqdm import tqdm
-import json
 
 from .elliptic_curve import EllipticCurve, SingularCurveError
 from .torsion import calculate_torsion_subgroup
@@ -76,4 +76,4 @@ def write_chunk_image(chunk_y: int, chunk_x: int):
         for group, points in chunk_dict.items():
             for py, px in points:
                 image[py, px] = GROUP_TO_COLOR[group][::-1]
-        cv2.imwrite(f"chunks/{chunk_y}_{chunk_x}_{CHUNK_SIZE}_NEW.png", image)
+        cv2.imwrite(f"chunks/{chunk_y}_{chunk_x}_{CHUNK_SIZE}.png", image)

@@ -55,6 +55,8 @@ spiral = Spiral(0, 0)
 
 screen.fill((255, 255, 255))
 
+PIXEL_SIZE = 10
+
 running = True
 while running:
     clock.tick(24)
@@ -68,7 +70,23 @@ while running:
         color = GROUP_TO_COLOR[calculate_torsion_subgroup(e)]
     except SingularCurveError:
         color = (255, 255, 255)
-    pygame.draw.rect(screen, color, (950 + point[0] * 10, 540 + point[1] * 10, 10, 10))
+    pygame.draw.rect(
+        screen,
+        color,
+        (
+            950 + point[0] * PIXEL_SIZE,
+            540 + point[1] * PIXEL_SIZE,
+            PIXEL_SIZE,
+            PIXEL_SIZE,
+        ),
+    )
+
+    mouse_pos = pygame.mouse.get_pos()
+    pixel_pos = ((mouse_pos[0] - 950) // PIXEL_SIZE, (mouse_pos[1] - 540) // PIXEL_SIZE)
+    font = pygame.font.SysFont("comicsans", 24)
+    pygame.draw.rect(screen, (255, 255, 255), (0, 0, 200, 100))
+    text_sfc = font.render(str(pixel_pos), False, (0, 0, 0))
+    screen.blit(text_sfc, (5, 5))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

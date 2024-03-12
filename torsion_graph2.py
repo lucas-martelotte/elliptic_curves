@@ -2,6 +2,7 @@ import json
 import os
 
 import pygame
+import sympy
 from pygame.surface import Surface
 
 GROUP_TO_COLOR = {
@@ -100,7 +101,8 @@ def get_chunks(pixel_size: int = 5) -> list[Chunk]:
 
 
 pygame.mouse.set_visible(False)
-font = pygame.font.SysFont("comicsans", 48)
+font_small = pygame.font.SysFont("comicsans", 36)
+font_big = pygame.font.SysFont("comicsans", 48)
 pixel_size, offset, camera_vel = 10, (960, 540), 50
 chunks = get_chunks(pixel_size=pixel_size)
 running = True
@@ -116,13 +118,19 @@ while running:
 
     mouse_pos = pygame.mouse.get_pos()
     offseted_mouse_pos = (mouse_pos[0] - offset[0], mouse_pos[1] - offset[1])
+    a, b = offseted_mouse_pos[0] // pixel_size, offseted_mouse_pos[1] // pixel_size
+    x = sympy.symbols("x")
+    eq = x**3 + a * x + b
+    eq_str = "y² = " + str(eq).replace("**3", "³").replace("*", "")
     pygame.draw.rect(screen, (255, 255, 255), (mouse_pos[0] - 10, mouse_pos[1], 20, 1))
     pygame.draw.rect(screen, (255, 255, 255), (mouse_pos[0], mouse_pos[1] - 10, 1, 20))
     for chunk in chunks:
         if group := chunk.collide(offseted_mouse_pos, pixel_size=pixel_size):
             if group != "0":
-                text = font.render(group, False, (255, 255, 255))
+                text = font_big.render(group, False, (255, 255, 255))
                 screen.blit(text, (mouse_pos[0] + 24, mouse_pos[1] + 12))
+                text = font_small.render(eq_str, False, (255, 255, 255))
+                screen.blit(text, (mouse_pos[0] + 24, mouse_pos[1] + 80))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
