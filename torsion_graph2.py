@@ -55,7 +55,7 @@ class Chunk:
                 point_x, point_y = px * pixel_size, py * pixel_size
                 pygame.draw.rect(
                     sfc,
-                    GROUP_TO_COLOR[group],  # if group in ["Z3"] else (0, 0, 0),
+                    GROUP_TO_COLOR[group],  # if group in ["Z6"] else (0, 0, 0),
                     (point_x, point_y, pixel_size, pixel_size),
                 )
         self._sfc = sfc
