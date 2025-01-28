@@ -5,8 +5,13 @@ from sympy import Rational
 
 
 class Point:
-    def __init__(self, value: tuple[Rational, Rational] | Literal["O"]):
-        self._value = value
+    def __init__(self, value: tuple[Rational | int, Rational | int] | Literal["O"]):
+        self._value: tuple[Rational, Rational] | Literal["O"] = "O"
+        if value != "O":
+            x, y = value[0], value[1]
+            x_rational = Rational(x, 1) if isinstance(x, int) else x
+            y_rational = Rational(y, 1) if isinstance(y, int) else y
+            self._value = (x_rational, y_rational)
 
     @property
     def value(self) -> tuple[Rational, Rational] | Literal["O"]:
