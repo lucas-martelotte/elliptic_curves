@@ -75,6 +75,8 @@ e.torsion
 Lastly, one is able to calculate bounds for the rank. In this case, the elliptic curve must have the parameter $C$ equal to zero. This guarantees that $(0,0)$ is a point of order two in $E(\mathbb{Q})$. Let $r$ be the rank of this elliptic curve. By running "calculate_rank", the program returns a pair $(a,b)$ such that $a \leq r \leq b$. The rank can be pinpointed exactly when $a = b$. This algorithm was executed for more than 10.000 different elliptic curves and roughly 22% of them returned definitive answers for the rank.
 
 ```python
+from src.elliptic_curves import calculate_rank
+
 e = EllipticCurve(2, -4, 0)
 calculate_rank(e)
 # Output: (0,1)
